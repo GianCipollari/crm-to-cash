@@ -1,0 +1,54 @@
+# Synthetic company: "Contable Cloud", a B2B SaaS selling accounting software in LatAm.
+# Every run with the same seed produces exactly the same dataset.
+
+seed: 42
+start_date: "2025-11-01"   # first day of the simulated period
+months: 12                 # simulated period length
+as_of_date: "2026-10-31"   # "today" inside the simulation
+currency: usd
+
+volumes:
+  companies: 200
+  contacts: 1000
+  deals: 500
+
+owners:                    # sales reps (stored as a custom deal property in HubSpot)
+  - Lucía Fernández
+  - Martín Gómez
+  - Sofía Herrera
+  - Diego Ramírez
+  - Valentina Castro
+  - Tomás Morales
+
+# Each lead source behaves differently, so the analysis has a real story to find.
+#   deal_weight: relative chance that a contact from this source opens a deal
+#   win_rate:    share of closed deals that end as closed won
+#   bad_payer:   multiplier on the unpaid / partial payment anomaly rates
+lead_sources:
+  organic_search: {label: Organic Search, share: 0.30, deal_weight: 1.0, win_rate: 0.35, bad_payer: 0.8}
+  paid_ads:       {label: Paid Ads,       share: 0.25, deal_weight: 1.2, win_rate: 0.40, bad_payer: 2.0}
+  referral:       {label: Referral,       share: 0.15, deal_weight: 1.5, win_rate: 0.55, bad_payer: 0.4}
+  events:         {label: Events,         share: 0.15, deal_weight: 0.9, win_rate: 0.30, bad_payer: 1.0}
+  outbound:       {label: Outbound,       share: 0.15, deal_weight: 0.7, win_rate: 0.25, bad_payer: 1.2}
+
+deals:
+  amount_median_usd: 9000
+  amount_min_usd: 1500
+  amount_max_usd: 80000
+  sales_cycle_days: [15, 90]     # created -> closed
+  invoice_lag_days: [0, 10]      # closed won -> invoice date
+  payment_terms_days: 30         # invoice date -> due date
+  payment_delay_days: [-10, 20]  # due date -> payment date (negative = paid early)
+
+# Anomaly rates. Deal-level rates apply to closed-won deals (sampled without overlap).
+anomalies:
+  missing_invoice: 0.06      # won deal never invoiced
+  unpaid_invoice: 0.08       # invoice past due with no payment
+  partial_payment: 0.05      # only 30-80% collected
+  amount_mismatch: 0.07      # discount agreed but not recorded in the CRM
+  late_stage_update: 0.05    # CRM close date later than the payment date
+  refund: 0.02               # paid, then fully refunded
+  duplicate_deal: 0.03       # a second rep logs the same sale
+  # Customer-level rates apply to billed companies.
+  name_variant: 0.15         # "ACME S.A." in the CRM vs "Acme SA" in billing
+  missing_external_id: 0.10  # billing record without the CRM id -> fuzzy match needed
