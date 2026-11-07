@@ -1,6 +1,6 @@
 PY ?= python
 
-.PHONY: install test preview seed seed-hubspot seed-stripe clean
+.PHONY: install test preview seed seed-hubspot seed-stripe daily clean
 
 install:        ## install Python dependencies
 	$(PY) -m pip install -r requirements.txt
@@ -20,5 +20,8 @@ seed-hubspot:
 seed-stripe:
 	$(PY) -m generator.cli seed --target stripe
 
-clean:          ## delete local outputs and load state (does NOT delete remote data)
+daily:          ## simulate today's activity in HubSpot and Stripe (needs .env)
+	$(PY) -m generator.cli daily
+
+clean:        ## delete local outputs and load state (does NOT delete remote data)
 	rm -rf out

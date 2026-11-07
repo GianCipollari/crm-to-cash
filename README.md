@@ -3,8 +3,8 @@
 > Sales says a deal is closed-won. Finance says the money never arrived. This pipeline finds
 > where the gap comes from.
 
-**Status: week 1 of 6. The synthetic data generator is done.** Extraction, dbt models,
-orchestration and the dashboard come next (see the roadmap below).
+**Status: week 2 of 6.** The synthetic data generator and its daily activity simulator are
+done; the incremental extractor is in progress (see the roadmap below).
 
 ## The business problem
 
@@ -50,6 +50,14 @@ client-side rate limiting with retries on 429/5xx, resumable loads, Stripe idemp
 and a guard that refuses live Stripe keys. Details in
 [ADR 0001](docs/decisions/0001-synthetic-data.md).
 
+### Daily activity
+
+`python -m generator.cli daily` keeps the company alive after the seed: new contacts and
+deals, stage moves, invoices for newly won deals and payments around their due date. It is
+stateless, deterministic and idempotent per day, and plants no new anomalies, so the seed's
+manifest stays the ground truth. Use `--from 2026-11-01` to catch up a range of days. Details
+in [ADR 0002](docs/decisions/0002-daily-activity.md).
+
 ## Quick start
 
 ```bash
@@ -63,7 +71,7 @@ To load the data into HubSpot and Stripe, follow [docs/setup_accounts.md](docs/s
 ## Repository layout
 
 ```
-generator/     config.yaml, model.py (dataset build), anomalies.py,
+generator/     config.yaml, model.py (dataset build), anomalies.py, daily.py (daily activity),
                hubspot_loader.py, stripe_loader.py, http.py (rate-limited client), state.py
 tests/         unit tests, no network needed
 docs/          account setup and architecture decisions (ADRs)
@@ -73,7 +81,7 @@ docs/          account setup and architecture decisions (ADRs)
 ## Roadmap
 
 - [x] Week 1: repo, synthetic data generator, loaders, tests
-- [ ] Week 2: incremental extractor in Docker
+- [ ] Week 2: daily activity simulator (done), incremental extractor in Docker
 - [ ] Week 3: dbt staging and intermediate models, customer matching
 - [ ] Week 4: dbt marts, tests and CI/CD
 - [ ] Week 5: Snowflake and dashboard
