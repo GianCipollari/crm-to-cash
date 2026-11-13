@@ -4,7 +4,7 @@
 > where the gap comes from.
 
 **Status: week 2 of 6.** The synthetic data generator and its daily activity simulator are
-done; the incremental extractor is in progress (see the roadmap below).
+done; the incremental extractor reads HubSpot into DuckDB, Stripe is next (see the roadmap below).
 
 ## The business problem
 
@@ -73,6 +73,7 @@ To load the data into HubSpot and Stripe, follow [docs/setup_accounts.md](docs/s
 ```
 generator/     config.yaml, model.py (dataset build), anomalies.py, daily.py (daily activity),
                hubspot_loader.py, stripe_loader.py, http.py (rate-limited client), state.py
+extractor/     hubspot.py (incremental extraction), storage.py (raw tables + cursors), cli.py
 tests/         unit tests, no network needed
 docs/          account setup and architecture decisions (ADRs)
 .github/       CI: tests + generator smoke test on every pull request
@@ -81,7 +82,7 @@ docs/          account setup and architecture decisions (ADRs)
 ## Roadmap
 
 - [x] Week 1: repo, synthetic data generator, loaders, tests
-- [ ] Week 2: daily activity simulator (done), incremental extractor in Docker
+- [ ] Week 2: daily activity simulator (done), HubSpot extractor (done), Stripe extractor, Docker
 - [ ] Week 3: dbt staging and intermediate models, customer matching
 - [ ] Week 4: dbt marts, tests and CI/CD
 - [ ] Week 5: Snowflake and dashboard

@@ -41,3 +41,10 @@ be demonstrated or tested.
   without API calls).
 - The extractor must use modification timestamps, not creation dates, to catch stage moves
   and invoice payments.
+
+## Known issues
+
+- **Payment dated inside the seed period.** A seed invoice that was open on 2026-10-31 can be
+  paid by the daily job with a simulated `paid_at` before that date (observed: `INV-00098`,
+  paid 2026-10-30). Left as is on purpose: the pipeline treats it as late-arriving data. A fix
+  would clamp `paid_at` to the first day after the seed.
