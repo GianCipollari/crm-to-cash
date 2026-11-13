@@ -1,0 +1,11 @@
+.git
+.github
+.venv
+.env
+out
+docs
+tests
+**/__pycache__
+.pytest_cache
+*.patch
+*.duckdb

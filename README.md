@@ -4,7 +4,7 @@
 > where the gap comes from.
 
 **Status: week 2 of 6.** The synthetic data generator and its daily activity simulator are
-done; the incremental extractor reads HubSpot and Stripe into DuckDB. Docker is next (see the roadmap below).
+done; the incremental extractor reads HubSpot and Stripe into DuckDB and runs in Docker (see the roadmap below).
 
 ## The business problem
 
@@ -68,6 +68,18 @@ make preview     # builds the company and writes CSVs to out/dataset/ (no accoun
 
 To load the data into HubSpot and Stripe, follow [docs/setup_accounts.md](docs/setup_accounts.md).
 
+### With Docker
+
+One image runs every Python module; keys come from `.env` at run time and the DuckDB
+warehouse stays in `out/` on the host.
+
+```bash
+docker compose build
+docker compose run --rm app                                   # incremental extraction
+docker compose run --rm app extractor.cli --source stripe     # one source
+docker compose run --rm app generator.cli daily               # today's activity
+```
+
 ## Repository layout
 
 ```
@@ -82,7 +94,7 @@ docs/          account setup and architecture decisions (ADRs)
 ## Roadmap
 
 - [x] Week 1: repo, synthetic data generator, loaders, tests
-- [ ] Week 2: daily activity simulator (done), HubSpot and Stripe extractors (done), Docker
+- [ ] Week 2: daily activity simulator (done), HubSpot and Stripe extractors, Docker (done)
 - [ ] Week 3: dbt staging and intermediate models, customer matching
 - [ ] Week 4: dbt marts, tests and CI/CD
 - [ ] Week 5: Snowflake and dashboard
