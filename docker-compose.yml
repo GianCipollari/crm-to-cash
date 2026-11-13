@@ -1,0 +1,7 @@
+services:
+  app:
+    build: .
+    image: crm-to-cash:latest
+    env_file: .env          # API keys, read at run time; never copied into the image
+    volumes:
+      - ./out:/app/out      # the DuckDB warehouse and outputs stay on your computer

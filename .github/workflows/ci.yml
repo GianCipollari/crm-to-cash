@@ -18,3 +18,15 @@ jobs:
       - run: python -m pytest -q
       - name: Generator smoke test (no API calls)
         run: python -m generator.cli seed --dry-run
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image
+        run: docker build -t crm-to-cash:ci .
+      - name: Smoke test inside the container (no API calls)
+        run: docker run --rm crm-to-cash:ci generator.cli seed --dry-run
+      - name: Extractor starts inside the container
+        run: docker run --rm crm-to-cash:ci extractor.cli --help

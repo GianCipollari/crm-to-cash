@@ -5,6 +5,8 @@ Examples:
     python -m generator.cli seed --target hubspot     # load the CRM side
     python -m generator.cli seed --target stripe      # load the billing side
     python -m generator.cli seed --target all
+    python -m generator.cli daily                     # simulate today
+    python -m generator.cli daily --from 2026-11-01   # catch up a range of days
 """
 
 from __future__ import annotations
@@ -15,6 +17,7 @@ import logging
 import os
 from collections import Counter
 from dataclasses import asdict, fields
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -59,6 +62,31 @@ def summary(ds) -> str:
     return "\n".join(lines)
 
 
+def daily_range(args, today: date) -> list[date]:
+    if args.date:
+        return [date.fromisoformat(args.date)]
+    if args.date_from:
+        start = date.fromisoformat(args.date_from)
+        end = date.fromisoformat(args.date_to) if args.date_to else today
+        if end < start:
+            raise SystemExit("--to must not be earlier than --from")
+        return [start + timedelta(days=i) for i in range((end - start).days + 1)]
+    return [today]
+
+
+def run_daily(args, config: dict) -> None:
+    from generator.daily import DailyRunner
+
+    runner = DailyRunner.from_keys(
+        config, os.environ["HUBSPOT_TOKEN"], os.environ["STRIPE_TEST_KEY"],
+        Path(args.out) / "state" / "stripe_daily.json",
+    )
+    totals: Counter = Counter()
+    for day in daily_range(args, datetime.now(timezone.utc).date()):
+        totals.update(runner.run_day(day))
+    print("Daily totals: " + (", ".join(f"{k}={v}" for k, v in sorted(totals.items())) or "no changes"))
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="generator")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -67,12 +95,23 @@ def main(argv: list[str] | None = None) -> None:
     seed.add_argument("--dry-run", action="store_true", help="Only build and export CSVs")
     seed.add_argument("--config", default=str(ROOT / "generator" / "config.yaml"))
     seed.add_argument("--out", default=str(ROOT / "out"))
+
+    daily = sub.add_parser("daily", help="Simulate new activity for one day or a range of days")
+    daily.add_argument("--date", help="Day to simulate, YYYY-MM-DD (default: today, UTC)")
+    daily.add_argument("--from", dest="date_from", help="First day of a range, YYYY-MM-DD")
+    daily.add_argument("--to", dest="date_to", help="Last day of a range, YYYY-MM-DD (default: today)")
+    daily.add_argument("--config", default=str(ROOT / "generator" / "config.yaml"))
+    daily.add_argument("--out", default=str(ROOT / "out"))
     args = parser.parse_args(argv)
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     load_dotenv(ROOT / ".env")
 
     config = load_config(args.config)
+    if args.command == "daily":
+        run_daily(args, config)
+        return
+
     ds = build_dataset(config)
     out = Path(args.out)
     export_csv(ds, out / "dataset")
