@@ -241,6 +241,8 @@ class DailyRunner:
             eid = p.get("external_id")
             if not eid or from_ms(p.get("sim_last_moved")) == day or not should_move(eid, day):
                 continue
+            if p.get("dealstage") not in OPEN_STAGES:
+                continue  # search index still lists a deal that was just closed: skip it
             stage = next_stage(eid, p["dealstage"], day)
             props = {"dealstage": stage, "sim_last_moved": _ms(day)}
             if stage in (WON, LOST):

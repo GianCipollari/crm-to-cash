@@ -133,3 +133,25 @@ def test_sixty_days_of_activity_keep_the_invariants(tmp_path):
         if d["external_id"].startswith("DEAL-D"):
             links = hs.assoc[("deals", d["id"])]
             assert set(links) == {"companies", "contacts"}
+
+
+def test_stale_search_result_for_a_closed_deal_is_skipped(tmp_path):
+    """HubSpot's search index can lag: a just-closed deal may still match the open filter."""
+    runner, hs, *_ = make_world(tmp_path)
+    original = hs.request
+
+    def stale_search(method, path, json=None, **kw):
+        resp = original(method, path, json=json, **kw)
+        if path == "/crm/v3/objects/deals/search" and resp.get("results"):
+            resp["results"].append({"id": "stale", "properties": {
+                "external_id": "DEAL-STALE", "dealstage": WON, "sim_last_moved": None}})
+        return resp
+
+    hs.request = stale_search
+    from generator import daily
+    old = daily.MOVE_PROBABILITY
+    daily.MOVE_PROBABILITY = 1.0  # force every deal to be considered
+    try:
+        runner.move_deals(DAY1)   # must not raise
+    finally:
+        daily.MOVE_PROBABILITY = old
