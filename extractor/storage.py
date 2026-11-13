@@ -77,6 +77,11 @@ class RawStore:
             if "no transaction" not in str(err).lower():
                 raise
 
+    def payloads(self, table: str) -> dict[str, dict]:
+        """id -> stored payload, for re-checking records that may still change."""
+        self._ensure_table(table)
+        return {rid: json.loads(p) for rid, p in self.conn.execute(f"SELECT id, payload FROM {table}").fetchall()}
+
     def count(self, table: str) -> int:
         self._ensure_table(table)
         return self.conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
