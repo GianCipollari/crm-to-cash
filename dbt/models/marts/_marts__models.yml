@@ -1,0 +1,61 @@
+version: 2
+
+models:
+  - name: fct_deal_reconciliation
+    description: >
+      One row per won deal with the CRM amount, invoiced amount, net collected amount and a
+      reconciliation_status explaining any gap. Duplicates are kept and flagged (gap_amount = 0).
+    columns:
+      - name: deal_id
+        data_tests: [unique, not_null]
+      - name: reconciliation_status
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [reconciled, duplicate, pending_invoice, missing_invoice, refunded,
+                         partial_payment, unpaid_overdue, not_yet_due, amount_mismatch, late_stage_update]
+
+  - name: fct_lead_funnel
+    description: One row per real contact, with funnel flags (deal, won, paid) and amounts.
+    columns:
+      - name: contact_id
+        data_tests: [unique, not_null]
+      - name: lead_source
+        data_tests: [not_null]
+
+  - name: mart_data_quality_issues
+    description: >
+      One row per detected data problem, using the anomaly manifest's vocabulary so the two
+      can be compared. Includes problems the generator did not plant (for example HubSpot's
+      sample contacts or invoices that are late but were not planted as unpaid).
+    columns:
+      - name: issue_id
+        data_tests: [unique, not_null]
+      - name: issue_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [duplicate_deal, missing_invoice, unpaid_invoice, partial_payment, amount_mismatch,
+                         late_stage_update, refund, name_variant, missing_external_id,
+                         unmatched_customer, contact_without_external_id]
+
+  - name: dim_customers
+    description: One row per CRM company created by the pipeline, with its billing customer and totals.
+    columns:
+      - name: company_id
+        data_tests: [unique, not_null]
+      - name: billing_customers_count
+        description: More than one would mean the same company was set up twice in billing.
+
+  - name: dim_sales_reps
+    description: One row per sales rep.
+    columns:
+      - name: sales_rep
+        data_tests: [unique, not_null]
+
+  - name: dim_date
+    description: Calendar from the start of the seed period to 60 days ahead.
+    columns:
+      - name: date_day
+        data_tests: [unique, not_null]
