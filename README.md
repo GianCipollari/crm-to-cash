@@ -3,8 +3,8 @@
 > Sales says a deal is closed-won. Finance says the money never arrived. This pipeline finds
 > where the gap comes from.
 
-**Status: week 2 of 6.** The synthetic data generator and its daily activity simulator are
-done; the incremental extractor reads HubSpot and Stripe into DuckDB and runs in Docker (see the roadmap below).
+**Status: week 3 of 6.** The synthetic data generator and its daily activity simulator are
+done; the incremental extractor reads HubSpot and Stripe into DuckDB and runs in Docker; dbt staging and intermediate models are built (see the roadmap below).
 
 ## The business problem
 
@@ -68,6 +68,15 @@ make preview     # builds the company and writes CSVs to out/dataset/ (no accoun
 
 To load the data into HubSpot and Stripe, follow [docs/setup_accounts.md](docs/setup_accounts.md).
 
+### Transformations (dbt)
+
+```bash
+cd dbt
+dbt deps
+dbt build      # staging -> intermediate, snapshot, all tests
+```
+Matching rules are explained in [ADR 0004](docs/decisions/0004-matching-strategy.md).
+
 ### With Docker
 
 One image runs every Python module; keys come from `.env` at run time and the DuckDB
@@ -86,6 +95,7 @@ docker compose run --rm app generator.cli daily               # today's activity
 generator/     config.yaml, model.py (dataset build), anomalies.py, daily.py (daily activity),
                hubspot_loader.py, stripe_loader.py, http.py (rate-limited client), state.py
 extractor/     hubspot.py, stripe.py (incremental extraction), storage.py (raw tables + cursors), cli.py
+dbt/           staging, intermediate, snapshots, seeds (anomaly manifest), tests
 tests/         unit tests, no network needed
 docs/          account setup and architecture decisions (ADRs)
 .github/       CI: tests + generator smoke test on every pull request
@@ -94,8 +104,8 @@ docs/          account setup and architecture decisions (ADRs)
 ## Roadmap
 
 - [x] Week 1: repo, synthetic data generator, loaders, tests
-- [ ] Week 2: daily activity simulator (done), HubSpot and Stripe extractors, Docker (done)
-- [ ] Week 3: dbt staging and intermediate models, customer matching
+- [x] Week 2: daily activity simulator, HubSpot and Stripe extractors, Docker
+- [x] Week 3: dbt staging and intermediate models, customer matching, deal snapshot
 - [ ] Week 4: dbt marts, tests and CI/CD
 - [ ] Week 5: Snowflake and dashboard
 - [ ] Week 6: documentation and polish

@@ -18,6 +18,11 @@ jobs:
       - run: python -m pytest -q
       - name: Generator smoke test (no API calls)
         run: python -m generator.cli seed --dry-run
+      - name: dbt project compiles
+        working-directory: dbt
+        run: |
+          dbt deps
+          dbt parse
 
   docker:
     runs-on: ubuntu-latest

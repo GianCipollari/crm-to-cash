@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: int_customers_matched
+    description: >
+      One row per Stripe customer linked to its HubSpot company, with the method that
+      resolved the match (external_id, email_domain, normalized_name) or 'unmatched'.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: match_method
+        description: A warning lists customers that no pass could resolve.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [external_id, email_domain, normalized_name]
+              config:
+                severity: warn
+
+  - name: int_invoice_payments
+    description: One row per invoice with collected, refunded and outstanding amounts.
+    columns:
+      - name: invoice_id
+        data_tests: [unique, not_null]
+      - name: payment_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [unpaid, partial, paid]
+
+  - name: int_deals_with_invoices
+    description: One row per won deal with its invoice (if any) and payment status.
+    columns:
+      - name: deal_id
+        data_tests: [unique, not_null]
+      - name: invoice_id
+        description: An invoice can bill at most one deal.
+        data_tests: [unique]
+      - name: invoice_match_method
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [deal_ref, company_amount_date, none]
+
+  - name: int_deal_duplicates
+    description: Won deals that duplicate an earlier one (same company and amount, close dates within 3 days).
+    columns:
+      - name: deal_id
+        data_tests: [unique, not_null]
