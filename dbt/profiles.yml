@@ -1,0 +1,9 @@
+# dbt looks for this file in the folder where you run it (dbt/), so no setup in your
+# home folder is needed. The warehouse path can be overridden with WAREHOUSE_PATH.
+crm_to_cash:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('WAREHOUSE_PATH', '../out/warehouse.duckdb') }}"
+      threads: 4

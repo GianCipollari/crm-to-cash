@@ -1,0 +1,17 @@
+version: 2
+
+seeds:
+  - name: anomalies_manifest
+    description: >
+      Ground truth: every data problem the generator planted on purpose
+      (copied from out/dataset/anomalies.csv). Week 4 tests compare what the
+      pipeline detects against this list.
+    columns:
+      - name: anomaly_type
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: [missing_invoice, unpaid_invoice, partial_payment, amount_mismatch,
+                       late_stage_update, refund, duplicate_deal, name_variant, missing_external_id]
+      - name: external_id
+        data_tests: [not_null]

@@ -1,0 +1,32 @@
+name: crm_to_cash
+version: "1.0.0"
+config-version: 2
+profile: crm_to_cash
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  seed_end_date: "2026-10-31"   # last day of the synthetic seed period
+  amount_tolerance: 0.01        # relative difference accepted between deal and invoice amounts
+
+models:
+  crm_to_cash:
+    staging:
+      +materialized: view       # cheap, always reflects the latest raw data
+    intermediate:
+      +materialized: view
+
+seeds:
+  crm_to_cash:
+    anomalies_manifest:
+      +column_types:
+        anomaly_type: varchar
+        object_type: varchar
+        external_id: varchar
+        related_deal_id: varchar
+        detail: varchar

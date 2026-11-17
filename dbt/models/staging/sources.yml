@@ -1,0 +1,20 @@
+version: 2
+
+sources:
+  - name: raw
+    description: >
+      Records as returned by the HubSpot and Stripe APIs, written by the extractor
+      (one row per record, latest version). `payload` holds the JSON.
+    schema: main
+    loaded_at_field: "cast(_loaded_at as timestamptz)"
+    freshness:  # checked with `dbt source freshness`; the pipeline runs daily
+      warn_after: {count: 26, period: hour}
+      error_after: {count: 50, period: hour}
+    tables:
+      - name: raw_hubspot_companies
+      - name: raw_hubspot_contacts
+      - name: raw_hubspot_deals
+      - name: raw_stripe_customers
+      - name: raw_stripe_invoices
+      - name: raw_stripe_payment_intents
+      - name: raw_stripe_refunds

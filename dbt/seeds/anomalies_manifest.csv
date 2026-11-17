@@ -1,0 +1,65 @@
+anomaly_type,object_type,external_id,related_deal_id,detail
+missing_invoice,deal,DEAL-00233,DEAL-00233,Won deal of 29500.00 with no invoice
+missing_invoice,deal,DEAL-00214,DEAL-00214,Won deal of 7900.00 with no invoice
+missing_invoice,deal,DEAL-00181,DEAL-00181,Won deal of 5800.00 with no invoice
+missing_invoice,deal,DEAL-00441,DEAL-00441,Won deal of 9300.00 with no invoice
+missing_invoice,deal,DEAL-00279,DEAL-00279,Won deal of 5900.00 with no invoice
+missing_invoice,deal,DEAL-00217,DEAL-00217,Won deal of 11700.00 with no invoice
+missing_invoice,deal,DEAL-00266,DEAL-00266,Won deal of 46900.00 with no invoice
+unpaid_invoice,deal,DEAL-00173,DEAL-00173,Invoice past due with no payment
+unpaid_invoice,deal,DEAL-00350,DEAL-00350,Invoice past due with no payment
+unpaid_invoice,deal,DEAL-00211,DEAL-00211,Invoice past due with no payment
+unpaid_invoice,deal,DEAL-00230,DEAL-00230,Invoice past due with no payment
+unpaid_invoice,deal,DEAL-00001,DEAL-00001,Invoice past due with no payment
+unpaid_invoice,deal,DEAL-00106,DEAL-00106,Invoice past due with no payment
+unpaid_invoice,deal,DEAL-00009,DEAL-00009,Invoice past due with no payment
+unpaid_invoice,deal,DEAL-00380,DEAL-00380,Invoice past due with no payment
+unpaid_invoice,deal,DEAL-00275,DEAL-00275,Invoice past due with no payment
+unpaid_invoice,deal,DEAL-00072,DEAL-00072,Invoice past due with no payment
+partial_payment,deal,DEAL-00331,DEAL-00331,Only 70% collected
+partial_payment,deal,DEAL-00139,DEAL-00139,Only 52% collected
+partial_payment,deal,DEAL-00054,DEAL-00054,Only 77% collected
+partial_payment,deal,DEAL-00219,DEAL-00219,Only 76% collected
+partial_payment,deal,DEAL-00034,DEAL-00034,Only 43% collected
+partial_payment,deal,DEAL-00156,DEAL-00156,Only 40% collected
+amount_mismatch,deal,DEAL-00457,DEAL-00457,Invoice 17% lower than the CRM amount
+amount_mismatch,deal,DEAL-00172,DEAL-00172,Invoice 19% lower than the CRM amount
+amount_mismatch,deal,DEAL-00274,DEAL-00274,Invoice 12% lower than the CRM amount
+amount_mismatch,deal,DEAL-00063,DEAL-00063,Invoice 18% lower than the CRM amount
+amount_mismatch,deal,DEAL-00369,DEAL-00369,Invoice 11% lower than the CRM amount
+amount_mismatch,deal,DEAL-00487,DEAL-00487,Invoice 16% lower than the CRM amount
+amount_mismatch,deal,DEAL-00370,DEAL-00370,Invoice 17% lower than the CRM amount
+amount_mismatch,deal,DEAL-00202,DEAL-00202,Invoice 14% lower than the CRM amount
+amount_mismatch,deal,DEAL-00099,DEAL-00099,Invoice 14% lower than the CRM amount
+late_stage_update,deal,DEAL-00413,DEAL-00413,CRM close date 2026-09-20 after payment 2026-09-13
+late_stage_update,deal,DEAL-00208,DEAL-00208,CRM close date 2026-07-28 after payment 2026-07-09
+late_stage_update,deal,DEAL-00329,DEAL-00329,CRM close date 2026-10-05 after payment 2026-09-25
+late_stage_update,deal,DEAL-00333,DEAL-00333,CRM close date 2026-10-20 after payment 2026-10-14
+late_stage_update,deal,DEAL-00452,DEAL-00452,CRM close date 2026-09-30 after payment 2026-09-09
+late_stage_update,deal,DEAL-00294,DEAL-00294,CRM close date 2026-10-01 after payment 2026-09-18
+refund,deal,DEAL-00288,DEAL-00288,Paid and then fully refunded
+refund,deal,DEAL-00215,DEAL-00215,Paid and then fully refunded
+duplicate_deal,deal,DEAL-00501,DEAL-00139,Duplicate of DEAL-00139 logged by Tomás Morales
+duplicate_deal,deal,DEAL-00502,DEAL-00294,Duplicate of DEAL-00294 logged by Martín Gómez
+duplicate_deal,deal,DEAL-00503,DEAL-00436,Duplicate of DEAL-00436 logged by Diego Ramírez
+duplicate_deal,deal,DEAL-00504,DEAL-00454,Duplicate of DEAL-00454 logged by Martín Gómez
+name_variant,customer,CMP-0003,,'Horizonte Seguros Ltda.' billed as 'Horizonte Seguros Ltda'
+missing_external_id,customer,CMP-0003,,Billing customer without CRM id; invoices lack deal ref
+name_variant,customer,CMP-0019,,'Litoral Farma S.A. de C.V.' billed as 'LITORAL FARMA S.A. DE C.V.'
+missing_external_id,customer,CMP-0021,,Billing customer without CRM id; invoices lack deal ref
+missing_external_id,customer,CMP-0037,,Billing customer without CRM id; invoices lack deal ref
+missing_external_id,customer,CMP-0041,,Billing customer without CRM id; invoices lack deal ref
+name_variant,customer,CMP-0062,,'Aurora Textil S.A.S.' billed as 'Aurora Textil SAS'
+missing_external_id,customer,CMP-0062,,Billing customer without CRM id; invoices lack deal ref
+name_variant,customer,CMP-0067,,'Puerto Inmobiliaria Ltda.' billed as 'PUERTO INMOBILIARIA LTDA.'
+name_variant,customer,CMP-0087,,'Pacífico Alimentos S.A. de C.V.' billed as 'PACÍFICO ALIMENTOS S.A. DE C.V.'
+name_variant,customer,CMP-0097,,'Sur Farma S.A.' billed as 'Sur Farma SA'
+missing_external_id,customer,CMP-0097,,Billing customer without CRM id; invoices lack deal ref
+name_variant,customer,CMP-0099,,'Nexo Farma S.R.L.' billed as 'Nexo Farma SRL'
+name_variant,customer,CMP-0100,,'Delta Farma Ltda.' billed as 'Delta Farma Ltda'
+missing_external_id,customer,CMP-0108,,Billing customer without CRM id; invoices lack deal ref
+name_variant,customer,CMP-0113,,'Cóndor Transportes S.A.' billed as 'CÓNDOR TRANSPORTES S.A.'
+name_variant,customer,CMP-0138,,'Vértice Metalúrgica S.A.' billed as 'Vertice Metalurgica SA'
+name_variant,customer,CMP-0170,,'Cóndor Consultores S.A. de C.V.' billed as 'Cóndor Consultores'
+name_variant,customer,CMP-0173,,'Cóndor Laboratorios Ltda.' billed as 'Cóndor Laboratorios'
+missing_external_id,customer,CMP-0197,,Billing customer without CRM id; invoices lack deal ref
