@@ -34,3 +34,16 @@ models:
                 field: company_id
       - name: amount
         data_tests: [not_null]
+
+  - name: stg_hubspot__contacts
+    description: One row per HubSpot contact; has_external_id is false for HubSpot's sample contacts.
+    columns:
+      - name: contact_id
+        data_tests: [unique, not_null]
+      - name: external_id
+        data_tests: [unique]
+      - name: lead_source
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [organic_search, paid_ads, referral, events, outbound]

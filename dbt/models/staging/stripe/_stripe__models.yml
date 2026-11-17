@@ -43,3 +43,18 @@ models:
           - accepted_values:
               arguments:
                 values: [invoice_payment, standalone]
+
+  - name: stg_stripe__refunds
+    description: One row per Stripe refund.
+    columns:
+      - name: refund_id
+        data_tests: [unique, not_null]
+      - name: payment_intent_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_stripe__payment_intents')
+                field: payment_intent_id
+      - name: amount
+        data_tests: [not_null]
