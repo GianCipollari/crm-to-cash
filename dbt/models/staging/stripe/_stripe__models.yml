@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: stg_stripe__customers
+    description: One row per Stripe customer. crm_company_id is empty when billing lacks the CRM id.
+    columns:
+      - name: customer_id
+        data_tests: [unique, not_null]
+      - name: email_domain
+        data_tests: [not_null]
+
+  - name: stg_stripe__invoices
+    description: One row per Stripe invoice, latest status, amounts in currency units.
+    columns:
+      - name: invoice_id
+        data_tests: [unique, not_null]
+      - name: invoice_external_id
+        data_tests: [unique, not_null]
+      - name: status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [draft, open, paid, void, uncollectible]
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_stripe__customers')
+                field: customer_id
+      - name: invoice_date
+        data_tests: [not_null]
+      - name: due_date
+        data_tests: [not_null]
+
+  - name: stg_stripe__payment_intents
+    description: One row per payment intent; payment_kind tells invoice payments from standalone partial payments.
+    columns:
+      - name: payment_intent_id
+        data_tests: [unique, not_null]
+      - name: payment_kind
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [invoice_payment, standalone]

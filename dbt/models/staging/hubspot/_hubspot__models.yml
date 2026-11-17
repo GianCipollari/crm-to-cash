@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: stg_hubspot__companies
+    description: One row per HubSpot company, typed and renamed from raw.
+    columns:
+      - name: company_id
+        description: HubSpot internal id.
+        data_tests: [unique, not_null]
+      - name: external_id
+        description: Generator id (CMP-xxxx). Unique when present.
+        data_tests: [unique]
+
+  - name: stg_hubspot__deals
+    description: One row per HubSpot deal (latest version), with its company and contact ids.
+    columns:
+      - name: deal_id
+        data_tests: [unique, not_null]
+      - name: external_id
+        data_tests: [unique, not_null]
+      - name: deal_stage
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [appointmentscheduled, qualifiedtobuy, presentationscheduled,
+                         decisionmakerboughtin, contractsent, closedwon, closedlost]
+      - name: company_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_hubspot__companies')
+                field: company_id
+      - name: amount
+        data_tests: [not_null]

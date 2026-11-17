@@ -11,7 +11,8 @@ seeds:
         data_tests:
           - not_null
           - accepted_values:
-              values: [missing_invoice, unpaid_invoice, partial_payment, amount_mismatch,
-                       late_stage_update, refund, duplicate_deal, name_variant, missing_external_id]
+              arguments:
+                values: [missing_invoice, unpaid_invoice, partial_payment, amount_mismatch,
+                         late_stage_update, refund, duplicate_deal, name_variant, missing_external_id]
       - name: external_id
         data_tests: [not_null]
