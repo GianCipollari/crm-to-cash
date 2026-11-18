@@ -38,3 +38,26 @@ def test_reads_raw_tables_and_loads_them_unchanged():
     assert counts == {"raw_hubspot_deals": 1, "raw_stripe_invoices": 1}
     assert sf.cur.rows["raw.raw_hubspot_deals"][0][:2] == ("1", "t")
     assert any(s.startswith("create or replace table raw.raw_stripe_invoices") for s in sf.cur.statements)
+
+
+def test_compare_flags_only_real_differences():
+    from decimal import Decimal
+
+    from extractor.compare_warehouses import compare, summarize
+
+    duck_rows = {"deals by reconciliation status": [("reconciled", 63, 0)],
+                 "data quality issues by type": [("refund", 2, 28900.0)]}
+    sf_rows = {"deals by reconciliation status": [("reconciled", 63, Decimal("0.00"))],
+               "data quality issues by type": [("refund", 2, Decimal("28900.00"))]}
+
+    def runner(rows):
+        from extractor.compare_warehouses import CHECKS
+        names = {sql: check for check, sql in CHECKS.items()}
+        return lambda sql: rows.get(names[sql], [])
+
+    same = compare(summarize(runner(duck_rows)), summarize(runner(sf_rows)))
+    assert all(r[4] for r in same)  # float vs Decimal with the same value is not a difference
+
+    sf_rows["data quality issues by type"] = [("refund", 1, Decimal("14450.00"))]
+    diff = compare(summarize(runner(duck_rows)), summarize(runner(sf_rows)))
+    assert [r[1] for r in diff if not r[4]] == ["refund"]

@@ -36,7 +36,7 @@ final as (
         sales_rep,
         product,
         close_date,
-        strftime(close_date, '%Y-%m')                        as close_month,
+        {{ year_month('close_date') }}                       as close_month,
 
         -- the three amounts that should agree
         deal_amount,
@@ -67,7 +67,7 @@ final as (
         case
             when is_duplicate                                         then 'duplicate'
             when invoice_id is null
-                 and close_date >= {{ as_of_date() }} - interval 10 day then 'pending_invoice'
+                 and close_date >= {{ as_of_date() }} - interval '10 day' then 'pending_invoice'
             when invoice_id is null                                   then 'missing_invoice'
             when is_refunded                                          then 'refunded'
             when payment_status = 'partial'                           then 'partial_payment'

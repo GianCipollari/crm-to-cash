@@ -43,7 +43,7 @@ candidates as (
     from invoices as i
     inner join won_deals as d
         on i.company_id = d.company_id
-        and i.invoice_date between d.close_date and d.close_date + interval 15 day
+        and i.invoice_date between d.close_date and d.close_date + interval '15 day'
     where i.crm_deal_id is null
       and d.deal_id not in (select deal_id from by_reference)
 
@@ -58,7 +58,7 @@ by_company as (
             row_number() over (partition by deal_id order by invoice_id) as rank_for_deal
         from candidates
         where rank_for_invoice = 1
-    )
+    ) as ranked
     where rank_for_deal = 1
 
 ),

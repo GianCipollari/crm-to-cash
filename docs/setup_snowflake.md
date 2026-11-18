@@ -46,3 +46,13 @@ dbt build --target snowflake
 Connection settings default to this project's account and objects; override them with
 `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PRIVATE_KEY_PATH`, `SNOWFLAKE_ROLE`,
 `SNOWFLAKE_WAREHOUSE` and `SNOWFLAKE_DATABASE`.
+
+## 4. Check both warehouses agree
+
+```bash
+python -m extractor.compare_warehouses
+```
+
+Runs the same summary queries on DuckDB and Snowflake (deals per reconciliation status,
+issues per type, customers per match method, funnel totals) and reports any difference.
+Build both targets on the same day first: statuses such as "overdue" depend on the date.
