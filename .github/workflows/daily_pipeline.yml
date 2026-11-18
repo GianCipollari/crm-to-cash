@@ -1,0 +1,59 @@
+name: daily-pipeline
+
+# The whole pipeline, every day, without anyone's computer:
+# simulate the day -> extract incrementally -> dbt build -> check freshness.
+# The DuckDB warehouse is carried from one run to the next with the Actions cache.
+on:
+  schedule:
+    - cron: "17 9 * * *"   # 06:17 in Buenos Aires (09:17 UTC); off the hour to avoid queue peaks
+  workflow_dispatch:        # "Run workflow" button in the Actions tab
+
+concurrency:
+  group: daily-pipeline     # never two runs writing the same warehouse
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      HUBSPOT_TOKEN: ${{ secrets.HUBSPOT_TOKEN }}
+      STRIPE_TEST_KEY: ${{ secrets.STRIPE_TEST_KEY }}
+      WAREHOUSE_PATH: ${{ github.workspace }}/out/warehouse.duckdb
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      - name: Restore the warehouse from the previous run
+        uses: actions/cache/restore@v4
+        with:
+          path: out/warehouse.duckdb
+          key: warehouse-${{ github.run_id }}
+          restore-keys: warehouse-
+
+      - name: Simulate today's activity
+        run: python -m generator.cli daily
+
+      - name: Extract new and changed records
+        run: python -m extractor.cli --db "$WAREHOUSE_PATH"
+
+      - name: Transform and test
+        working-directory: dbt
+        run: |
+          dbt deps
+          dbt build
+
+      - name: Check source freshness
+        working-directory: dbt
+        run: dbt source freshness
+
+      - name: Save the warehouse for the next run
+        if: always()   # keep the extracted data even if a dbt test failed
+        uses: actions/cache/save@v4
+        with:
+          path: out/warehouse.duckdb
+          key: warehouse-${{ github.run_id }}

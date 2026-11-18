@@ -1,6 +1,6 @@
 PY ?= python
 
-.PHONY: install test preview seed seed-hubspot seed-stripe daily extract extract-full docker-build docker-extract docker-daily clean
+.PHONY: install test preview seed seed-hubspot seed-stripe daily extract extract-full docker-build docker-extract docker-daily ci-dbt clean
 
 install:        ## install Python dependencies
 	$(PY) -m pip install -r requirements.txt
@@ -37,6 +37,10 @@ docker-extract: ## run the incremental extraction inside Docker
 
 docker-daily:   ## simulate today's activity inside Docker
 	docker compose run --rm app generator.cli daily
+
+ci-dbt:         ## what CI runs: dbt build on fixtures built from the seed (no APIs)
+	$(PY) -m generator.cli fixtures --db out/ci_warehouse.duckdb
+	cd dbt && WAREHOUSE_PATH=../out/ci_warehouse.duckdb dbt build --vars '{as_of_date: "2026-11-01"}'
 
 clean:        ## delete local outputs and load state (does NOT delete remote data)
 	rm -rf out
