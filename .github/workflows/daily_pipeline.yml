@@ -1,12 +1,20 @@
 name: daily-pipeline
 
 # The whole pipeline, every day, without anyone's computer:
-# simulate the day -> extract incrementally -> dbt build -> check freshness.
+# simulate the day -> extract incrementally -> dbt build -> check freshness
+# -> publish the dashboard (Evidence) and the dbt docs to GitHub Pages.
 # The DuckDB warehouse is carried from one run to the next with the Actions cache.
 on:
   schedule:
     - cron: "17 9 * * *"   # 06:17 in Buenos Aires (09:17 UTC); off the hour to avoid queue peaks
   workflow_dispatch:        # "Run workflow" button in the Actions tab
+  push:
+    branches: [main]        # a merge refreshes the site; re-running a day changes nothing
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: daily-pipeline     # never two runs writing the same warehouse
@@ -47,13 +55,52 @@ jobs:
           dbt deps
           dbt build
 
-      - name: Check source freshness
-        working-directory: dbt
-        run: dbt source freshness
-
       - name: Save the warehouse for the next run
         if: always()   # keep the extracted data even if a dbt test failed
         uses: actions/cache/save@v4
         with:
           path: out/warehouse.duckdb
           key: warehouse-${{ github.run_id }}
+
+      - name: Check source freshness
+        working-directory: dbt
+        run: dbt source freshness
+
+      # ---------------- Site: dashboard at the root, dbt docs at /docs ---------------- #
+      - name: dbt docs on today's data
+        working-directory: dbt
+        run: |
+          dbt docs generate --static
+          mkdir -p ../site/docs
+          cp target/static_index.html ../site/docs/index.html
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build the dashboard (official Evidence template + our pages and queries)
+        run: |
+          npx --yes degit evidence-dev/template _evidence
+          rm -rf _evidence/pages _evidence/sources
+          cp -r dashboard/pages dashboard/sources _evidence/
+          cp dashboard/evidence.config.yaml _evidence/evidence.config.yaml
+          cp "$WAREHOUSE_PATH" _evidence/sources/warehouse/warehouse.duckdb
+          cd _evidence
+          npm install
+          npm run sources
+          npm run build
+          cp -r build/. ../site/
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: run
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
