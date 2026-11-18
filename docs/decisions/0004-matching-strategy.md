@@ -19,12 +19,15 @@ without a deal reference and duplicate deals.
 
 2. **Invoices to won deals, in two passes** (`int_deals_with_invoices`): the CRM deal id in
    invoice metadata, then, for invoices without it, a won deal of the same company invoiced
-   0-15 days after its close date, preferring the closest amount and then the closest date.
-   A test guarantees that one invoice bills at most one deal.
+   0-15 days after its close date, preferring the closest amount and, on a tie, the earlier
+   deal, so a duplicate logged later never takes the original's invoice. A test guarantees
+   that one invoice bills at most one deal.
 
 3. **Duplicates are flagged, not removed** (`int_deal_duplicates`): same company and amount,
-   close dates at most 3 days apart; the later deal is marked as the duplicate. Marts decide
-   what to exclude.
+   close dates at most 3 days apart; the later deal is marked as the duplicate, unless an
+   invoice references it by its CRM id (billing confirms a real sale). Marts decide what to
+   exclude. The ground-truth tests found the need for that exception: two real sales of the
+   same company and amount closed within 3 days in the seed (DEAL-00034 and DEAL-00370).
 
 4. **Staging keeps every source row.** Filters (for example HubSpot's sample contacts, flagged
    with `has_external_id`) are applied in intermediate or marts, never in staging.
@@ -32,5 +35,5 @@ without a deal reference and duplicate deals.
 ## Consequences
 
 - Every match can be explained in an interview or an audit: the method is a column.
-- Pass 2 of the invoice matching is heuristic. If two won deals of the same company and
-  amount close within the window, the earlier external id wins.
+- Pass 2 of the invoice matching is heuristic: with two won deals of the same company and
+  amount in the window, the earlier external id wins.

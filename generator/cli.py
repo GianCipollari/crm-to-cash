@@ -102,6 +102,9 @@ def main(argv: list[str] | None = None) -> None:
     daily.add_argument("--to", dest="date_to", help="Last day of a range, YYYY-MM-DD (default: today)")
     daily.add_argument("--config", default=str(ROOT / "generator" / "config.yaml"))
     daily.add_argument("--out", default=str(ROOT / "out"))
+    fixtures = sub.add_parser("fixtures", help="Write raw tables from the seed, without APIs (for CI)")
+    fixtures.add_argument("--db", default=str(ROOT / "out" / "ci_warehouse.duckdb"))
+    fixtures.add_argument("--config", default=str(ROOT / "generator" / "config.yaml"))
     args = parser.parse_args(argv)
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -110,6 +113,20 @@ def main(argv: list[str] | None = None) -> None:
     config = load_config(args.config)
     if args.command == "daily":
         run_daily(args, config)
+        return
+    if args.command == "fixtures":
+        import duckdb
+
+        from extractor.storage import RawStore
+        from generator.fixtures import write_fixtures
+
+        Path(args.db).parent.mkdir(parents=True, exist_ok=True)
+        conn = duckdb.connect(args.db)
+        try:
+            counts = write_fixtures(build_dataset(config), RawStore(conn))
+        finally:
+            conn.close()
+        print("Fixture rows written: " + ", ".join(f"{k}={v}" for k, v in counts.items()))
         return
 
     ds = build_dataset(config)

@@ -8,6 +8,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      WAREHOUSE_PATH: ${{ github.workspace }}/out/ci_warehouse.duckdb
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -15,14 +17,15 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements.txt
-      - run: python -m pytest -q
-      - name: Generator smoke test (no API calls)
-        run: python -m generator.cli seed --dry-run
-      - name: dbt project compiles
+      - name: Python tests
+        run: python -m pytest -q
+      - name: Raw tables from the seed (no API calls, no secrets)
+        run: python -m generator.cli fixtures --db "$WAREHOUSE_PATH"
+      - name: dbt build on the fixtures, including the ground-truth tests
         working-directory: dbt
         run: |
           dbt deps
-          dbt parse
+          dbt build --vars '{as_of_date: "2026-11-01"}'
 
   docker:
     runs-on: ubuntu-latest

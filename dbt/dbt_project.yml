@@ -20,6 +20,8 @@ models:
       +materialized: view       # cheap, always reflects the latest raw data
     intermediate:
       +materialized: view
+    marts:
+      +materialized: table      # what dashboards query: computed once per run
 
 seeds:
   crm_to_cash:
