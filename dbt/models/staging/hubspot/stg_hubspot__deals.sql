@@ -18,7 +18,9 @@ renamed as (
 
         -- attributes
         {{ json_text('$.properties.dealname') }}                        as deal_name,
-        split_part({{ json_text('$.properties.dealname') }}, ' - ', 1)  as product,
+        -- dealname is "<product> - CMP-xxxx" and the product itself contains " - ",
+        -- so remove the company suffix instead of splitting on the first dash
+        regexp_replace({{ json_text('$.properties.dealname') }}, ' - CMP-[0-9]+$', '') as product,
         try_cast({{ json_text('$.properties.amount') }} as decimal(14, 2)) as amount,
         {{ json_text('$.properties.pipeline') }}                        as pipeline,
         {{ json_text('$.properties.dealstage') }}                       as deal_stage,

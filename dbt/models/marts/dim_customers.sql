@@ -13,9 +13,9 @@ billing as (
     -- one billing customer per company; if there were two, keep the first created
     select
         company_id,
-        arg_min(customer_id, customer_id)    as stripe_customer_id,
-        arg_min(match_method, customer_id)   as match_method,
-        bool_or(name_differs)                as billing_name_differs,
+        min(customer_id)                      as stripe_customer_id,
+        min_by(match_method, customer_id)     as match_method,
+        max(case when name_differs then 1 else 0 end) = 1 as billing_name_differs,
         count(*)                             as billing_customers_count
     from {{ ref('int_customers_matched') }}
     where company_id is not null

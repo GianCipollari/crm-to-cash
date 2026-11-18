@@ -39,7 +39,7 @@ select
     c.company_id,
     c.lead_source,
     c.source_created_date,
-    strftime(c.source_created_date, '%Y-%m')         as cohort_month,
+    {{ year_month('c.source_created_date') }}        as cohort_month,
 
     coalesce(d.deals_count, 0)                       as deals_count,
     coalesce(w.won_deals_count, 0)                   as won_deals_count,

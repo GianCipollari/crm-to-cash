@@ -10,7 +10,7 @@ with staging as (
 
 raw as (
 
-    select coalesce(sum(cast(json_extract_string(payload, '$.amount_received') as bigint)), 0) / 100.0 as total
+    select coalesce(sum(cast({{ json_text('$.amount_received') }} as bigint)), 0) / 100.0 as total
     from {{ source('raw', 'raw_stripe_payment_intents') }}
 
 )
