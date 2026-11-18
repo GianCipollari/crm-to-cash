@@ -11,7 +11,7 @@ select
     issue_type,
     count(*)                          as issues,
     sum(coalesce(amount_at_risk, 0))  as amount_at_risk
-from warehouse.issues
+from marts.issues
 group by 1
 order by issues desc
 ```
@@ -32,7 +32,7 @@ order by issues desc
 
 ```sql all_issues
 select issue_type, object_type, external_id, related_deal_id, amount_at_risk, detail
-from warehouse.issues
+from marts.issues
 order by amount_at_risk desc nulls last
 ```
 

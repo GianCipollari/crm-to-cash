@@ -17,7 +17,7 @@ select
     sum(case when reconciliation_status in ('missing_invoice', 'unpaid_overdue', 'partial_payment',
                                             'amount_mismatch', 'refunded')
              then gap_amount else 0 end)                                  as problem_gap
-from warehouse.reconciliation
+from marts.reconciliation
 ```
 
 <BigValue data={kpis} value=won_deals title="Won deals" />

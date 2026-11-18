@@ -10,7 +10,7 @@ select
     reconciliation_status,
     count(*)         as deals,
     sum(gap_amount)  as gap_amount
-from warehouse.reconciliation
+from marts.reconciliation
 group by 1
 order by gap_amount desc
 ```
@@ -30,7 +30,7 @@ select
     sum(case when not is_duplicate then deal_amount else 0 end)  as won,
     sum(coalesce(invoice_amount, 0))                             as invoiced,
     sum(net_collected)                                           as collected
-from warehouse.reconciliation
+from marts.reconciliation
 group by 1
 order by 1
 ```
@@ -54,7 +54,7 @@ select
         / nullif(sum(case when not is_duplicate then deal_amount else 0 end), 0) as collection_rate,
     count(*) filter (where reconciliation_status <> 'reconciled'
                      and reconciliation_status <> 'not_yet_due')   as deals_with_issues
-from warehouse.reconciliation
+from marts.reconciliation
 group by 1
 order by won desc
 ```
@@ -80,7 +80,7 @@ select
     net_collected,
     gap_amount,
     reconciliation_status
-from warehouse.reconciliation
+from marts.reconciliation
 where reconciliation_status not in ('reconciled', 'not_yet_due', 'pending_invoice')
 order by gap_amount desc
 ```

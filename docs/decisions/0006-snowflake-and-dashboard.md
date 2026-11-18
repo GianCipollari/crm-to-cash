@@ -34,7 +34,7 @@ through its free 30-day trial, so whatever it proves must be recorded before it 
    summary queries on both and fails on any difference.
 
 6. **Evidence for the dashboard.** Pages are Markdown with SQL over the marts; the build
-   produces a static site. It is rebuilt by the daily pipeline from that day's warehouse
+   produces a static site. It is rebuilt by the daily pipeline from that day's marts
    and published to GitHub Pages together with the dbt docs (dashboard at the root, docs at
    `/docs`). One workflow publishes the whole site, because two workflows deploying to
    GitHub Pages would overwrite each other; `docs.yml` was retired. CI builds the dashboard
@@ -56,6 +56,9 @@ through its free 30-day trial, so whatever it proves must be recorded before it 
   trial ends, the `snowflake` target simply stops being used: nothing else depends on it.
 - New SQL must avoid engine-specific functions or wrap them in a dispatched macro; the
   Snowflake build is the check.
-- The Evidence project is not committed in full: CI and the daily pipeline start from the
-  official template and add `dashboard/pages`, `dashboard/sources` and the config. This
-  keeps the repository small, at the cost of depending on that template being available.
+- Evidence moved its official project template to a paid hosted product (Evidence Studio):
+  the template's `npm run sources` and `npm run build` now only print a deprecation notice.
+  The dashboard therefore declares the open-source packages itself (`dashboard/package.json`)
+  instead of copying the template. The marts are exported to CSV
+  (`extractor.export_dashboard_data`) and Evidence reads those files, so the dashboard does
+  not depend on Evidence bundling the same DuckDB version that wrote the warehouse.

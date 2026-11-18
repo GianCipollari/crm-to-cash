@@ -17,7 +17,7 @@ select
     sum(collected_amount) / nullif(sum(won_amount), 0)            as collection_rate,
     sum(collected_amount) / count(*)                              as collected_per_contact,
     median(days_lead_to_cash)                                     as median_days_to_cash
-from warehouse.funnel
+from marts.funnel
 group by 1
 order by collected_per_contact desc
 ```

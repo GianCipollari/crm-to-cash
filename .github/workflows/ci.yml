@@ -50,14 +50,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - run: python -m extractor.export_dashboard_data --db "$WAREHOUSE_PATH"
       - name: Build the dashboard
+        working-directory: dashboard
         run: |
-          npx --yes degit evidence-dev/template _evidence
-          rm -rf _evidence/pages _evidence/sources
-          cp -r dashboard/pages dashboard/sources _evidence/
-          cp dashboard/evidence.config.yaml _evidence/evidence.config.yaml
-          cp "$WAREHOUSE_PATH" _evidence/sources/warehouse/warehouse.duckdb
-          cd _evidence
           npm install
           npm run sources
           npm run build
