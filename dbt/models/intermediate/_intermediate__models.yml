@@ -43,7 +43,9 @@ models:
                 values: [deal_ref, company_amount_date, none]
 
   - name: int_deal_duplicates
-    description: Won deals that duplicate an earlier one (same company and amount, close dates within 3 days).
+    description: >
+      Won deals that duplicate an earlier one (same company and amount, close dates within
+      3 days), excluding deals that billing references by their CRM id.
     columns:
       - name: deal_id
         data_tests: [unique, not_null]

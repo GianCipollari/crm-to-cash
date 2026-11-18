@@ -2,7 +2,7 @@
 -- Pass 1 (deal_ref)            : invoice metadata holds the CRM deal id.
 -- Pass 2 (company_amount_date) : invoices without that reference are matched to a won
 --   deal of the same company (via int_customers_matched), invoiced 0-15 days after the
---   close date; the closest amount, then the closest date, wins. One invoice per deal.
+--   close date; the closest amount wins, then the earlier deal. One invoice per deal.
 
 with won_deals as (
 
@@ -36,7 +36,9 @@ candidates as (
         i.invoice_id,
         row_number() over (
             partition by i.invoice_id
-            order by abs(i.amount_due - d.amount), abs(i.invoice_date - d.close_date), d.external_id
+            -- closest amount first; on a tie the earlier deal wins, so a duplicate
+            -- logged later never takes the invoice away from the original sale
+            order by abs(i.amount_due - d.amount), d.external_id, abs(i.invoice_date - d.close_date)
         ) as rank_for_invoice
     from invoices as i
     inner join won_deals as d
