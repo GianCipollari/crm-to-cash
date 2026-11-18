@@ -1,0 +1,38 @@
+unit_tests:
+  - name: reconciliation_status_follows_the_rules
+    description: >
+      Fixed input deals, one per rule, and the status each must get. Protects the order of
+      the rules in fct_deal_reconciliation from accidental changes.
+    model: fct_deal_reconciliation
+    overrides:
+      vars:
+        as_of_date: "2026-11-17"
+        amount_tolerance: 0.01
+    given:
+      - input: ref('int_deal_duplicates')
+        rows:
+          - {deal_id: d01, duplicate_of_external_id: DEAL-X}
+      - input: ref('int_deals_with_invoices')
+        rows:
+          - {deal_id: d01, deal_amount: 1000, close_date: "2026-10-01"}
+          - {deal_id: d02, deal_amount: 1000, close_date: "2026-11-15"}
+          - {deal_id: d03, deal_amount: 1000, close_date: "2026-10-01"}
+          - {deal_id: d04, deal_amount: 1000, close_date: "2026-09-01", invoice_id: i04, invoice_amount: 1000, amount_difference: 0, payment_status: paid, is_refunded: true, is_overdue: false, last_paid_date: "2026-10-01"}
+          - {deal_id: d05, deal_amount: 1000, close_date: "2026-09-01", invoice_id: i05, invoice_amount: 1000, amount_difference: 0, payment_status: partial, is_refunded: false, is_overdue: true}
+          - {deal_id: d06, deal_amount: 1000, close_date: "2026-09-01", invoice_id: i06, invoice_amount: 1000, amount_difference: 0, payment_status: unpaid, is_refunded: false, is_overdue: true}
+          - {deal_id: d07, deal_amount: 1000, close_date: "2026-11-01", invoice_id: i07, invoice_amount: 1000, amount_difference: 0, payment_status: unpaid, is_refunded: false, is_overdue: false}
+          - {deal_id: d08, deal_amount: 1000, close_date: "2026-09-01", invoice_id: i08, invoice_amount: 900, amount_difference: -100, payment_status: paid, is_refunded: false, is_overdue: false, last_paid_date: "2026-10-05"}
+          - {deal_id: d09, deal_amount: 1000, close_date: "2026-09-10", invoice_id: i09, invoice_amount: 1000, amount_difference: 0, payment_status: paid, is_refunded: false, is_overdue: false, last_paid_date: "2026-09-01"}
+          - {deal_id: d10, deal_amount: 1000, close_date: "2026-09-01", invoice_id: i10, invoice_amount: 1000, amount_difference: 0, payment_status: paid, is_refunded: false, is_overdue: false, last_paid_date: "2026-10-01"}
+    expect:
+      rows:
+        - {deal_id: d01, reconciliation_status: duplicate}
+        - {deal_id: d02, reconciliation_status: pending_invoice}
+        - {deal_id: d03, reconciliation_status: missing_invoice}
+        - {deal_id: d04, reconciliation_status: refunded}
+        - {deal_id: d05, reconciliation_status: partial_payment}
+        - {deal_id: d06, reconciliation_status: unpaid_overdue}
+        - {deal_id: d07, reconciliation_status: not_yet_due}
+        - {deal_id: d08, reconciliation_status: amount_mismatch}
+        - {deal_id: d09, reconciliation_status: late_stage_update}
+        - {deal_id: d10, reconciliation_status: reconciled}

@@ -14,26 +14,51 @@ customers as (
 
 ),
 
+deal_checks as (
+
+    -- Each problem has its own rule, so one deal can show several problems at once
+    -- (for example an unpaid invoice that also carries an unrecorded discount).
+    -- reconciliation_status in the fact keeps only the main one.
+    select
+        *,
+        is_duplicate                                                        as has_duplicate_deal,
+        not is_duplicate and reconciliation_status = 'missing_invoice'      as has_missing_invoice,
+        not is_duplicate and reconciliation_status = 'unpaid_overdue'       as has_unpaid_invoice,
+        not is_duplicate and amount_collected > 0
+            and amount_collected < invoice_amount                           as has_partial_payment,
+        not is_duplicate and invoice_id is not null
+            and abs(amount_difference) > {{ var('amount_tolerance') }} * deal_amount as has_amount_mismatch,
+        not is_duplicate and last_paid_date < close_date                    as has_late_stage_update,
+        not is_duplicate and amount_refunded > 0                            as has_refund
+    from reconciliation
+
+),
+
+{#- issue type -> amount at risk for that issue; Jinja writes one select per check -#}
+{%- set checks = {
+    'duplicate_deal':    'deal_amount',
+    'missing_invoice':   'gap_amount',
+    'unpaid_invoice':    'gap_amount',
+    'partial_payment':   'gap_amount',
+    'amount_mismatch':   'abs(amount_difference)',
+    'late_stage_update': '0',
+    'refund':            'amount_refunded',
+} %}
+
 deal_issues as (
 
+    {% for issue, amount in checks.items() %}
     select
-        case reconciliation_status
-            when 'duplicate'         then 'duplicate_deal'
-            when 'missing_invoice'   then 'missing_invoice'
-            when 'unpaid_overdue'    then 'unpaid_invoice'
-            when 'partial_payment'   then 'partial_payment'
-            when 'amount_mismatch'   then 'amount_mismatch'
-            when 'late_stage_update' then 'late_stage_update'
-            when 'refunded'          then 'refund'
-        end                                                   as issue_type,
+        '{{ issue }}'                                         as issue_type,
         'deal'                                                as object_type,
         external_id,
         coalesce(duplicate_of_external_id, external_id)       as related_deal_id,
-        case when reconciliation_status = 'duplicate' then deal_amount
-             else gap_amount end                              as amount_at_risk,
-        'Deal ' || external_id || ': ' || reconciliation_status as detail
-    from reconciliation
-    where reconciliation_status not in ('reconciled', 'not_yet_due', 'pending_invoice')
+        {{ amount }}                                          as amount_at_risk,
+        'Deal ' || external_id || ' (status: ' || reconciliation_status || ')' as detail
+    from deal_checks
+    where has_{{ issue }}
+    {% if not loop.last %}union all{% endif %}
+    {% endfor %}
 
 ),
 
