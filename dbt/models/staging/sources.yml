@@ -5,7 +5,8 @@ sources:
     description: >
       Records as returned by the HubSpot and Stripe APIs, written by the extractor
       (one row per record, latest version). `payload` holds the JSON.
-    schema: main
+    # DuckDB keeps raw tables in main; in Snowflake extractor.load_snowflake writes them to RAW
+    schema: "{{ 'raw' if target.type == 'snowflake' else 'main' }}"
     loaded_at_field: "cast(_loaded_at as timestamptz)"
     freshness:  # checked with `dbt source freshness`; the pipeline runs daily
       warn_after: {count: 26, period: hour}

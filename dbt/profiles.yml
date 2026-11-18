@@ -1,9 +1,23 @@
 # dbt looks for this file in the folder where you run it (dbt/), so no setup in your
-# home folder is needed. The warehouse path can be overridden with WAREHOUSE_PATH.
+# home folder is needed.
+#   dev (default):  DuckDB file, path overridable with WAREHOUSE_PATH
+#   snowflake:      `dbt build --target snowflake`; key-pair auth, no password.
+#                   Defaults match docs/setup_snowflake.md; override with SNOWFLAKE_* env vars.
 crm_to_cash:
   target: dev
   outputs:
     dev:
       type: duckdb
       path: "{{ env_var('WAREHOUSE_PATH', '../out/warehouse.duckdb') }}"
+      threads: 4
+
+    snowflake:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', 'MHBLMHG-FC64741') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', 'DBT_SERVICE') }}"
+      private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH', '../out/keys/snowflake_dbt_key.p8') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'CRM_TO_CASH_ROLE') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'CRM_TO_CASH_WH') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'CRM_TO_CASH') }}"
+      schema: ANALYTICS
       threads: 4
