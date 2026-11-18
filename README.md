@@ -1,10 +1,15 @@
 # CRM-to-Cash
 
+[![ci](https://github.com/GianCipollari/crm-to-cash/actions/workflows/ci.yml/badge.svg)](https://github.com/GianCipollari/crm-to-cash/actions/workflows/ci.yml)
+[![daily-pipeline](https://github.com/GianCipollari/crm-to-cash/actions/workflows/daily_pipeline.yml/badge.svg)](https://github.com/GianCipollari/crm-to-cash/actions/workflows/daily_pipeline.yml)
+[![dbt docs](https://img.shields.io/badge/dbt_docs-lineage-orange)](https://giancipollari.github.io/crm-to-cash/)
+
 > Sales says a deal is closed-won. Finance says the money never arrived. This pipeline finds
 > where the gap comes from.
 
-**Status: week 3 of 6.** The synthetic data generator and its daily activity simulator are
-done; the incremental extractor reads HubSpot and Stripe into DuckDB and runs in Docker; dbt staging and intermediate models are built (see the roadmap below).
+**Status: week 4 of 6.** The pipeline runs end to end every day on GitHub Actions: synthetic
+activity, incremental extraction from HubSpot and Stripe, dbt models up to the marts, and
+tests that check every planted data problem is detected. Next: Snowflake and a dashboard.
 
 ## The business problem
 
@@ -17,7 +22,19 @@ collects) never fully agree. CRM-to-Cash joins HubSpot and Stripe data to answer
 3. Which lead sources bring customers who actually pay?
 4. How reliable is the CRM data?
 
-## Planned architecture
+## How it answers
+
+| Question | dbt mart |
+| --- | --- |
+| 1. Share of won revenue invoiced and collected | `fct_deal_reconciliation` (one row per won deal, with a `reconciliation_status`) |
+| 2. Where the gap comes from | `fct_deal_reconciliation` and `mart_data_quality_issues` |
+| 3. Lead sources that bring paying customers | `fct_lead_funnel` (contact -> deal -> won -> paid) |
+| 4. How reliable the CRM is | `mart_data_quality_issues` |
+
+Every model, column, test and the lineage graph are browsable in the
+[dbt docs](https://giancipollari.github.io/crm-to-cash/).
+
+## Architecture
 
 ```
 Generator (Python) -> HubSpot + Stripe (test) -> Extractor (Docker) -> raw
@@ -77,6 +94,18 @@ dbt build      # staging -> intermediate, snapshot, all tests
 ```
 Matching rules are explained in [ADR 0004](docs/decisions/0004-matching-strategy.md).
 
+### Automation (GitHub Actions)
+
+| Workflow | When | What |
+| --- | --- | --- |
+| `ci` | every pull request and push to `main` | Python tests; dbt build on fixtures built from the seed (no secrets), including the ground-truth tests; Docker build |
+| `daily-pipeline` | every day 06:17 Buenos Aires, or on demand | simulate the day, extract, `dbt build`, source freshness; the DuckDB warehouse is kept in the Actions cache |
+| `cd` | merge to `main` | publish the Docker image to GitHub Container Registry |
+| `docs` | merge to `main` | publish the dbt docs to GitHub Pages |
+
+Design and trade-offs (why not Airflow, why fixtures in CI) in
+[ADR 0005](docs/decisions/0005-orchestration-and-ci-cd.md). To reproduce CI locally: `make ci-dbt`.
+
 ### With Docker
 
 One image runs every Python module; keys come from `.env` at run time and the DuckDB
@@ -95,10 +124,10 @@ docker compose run --rm app generator.cli daily               # today's activity
 generator/     config.yaml, model.py (dataset build), anomalies.py, daily.py (daily activity),
                hubspot_loader.py, stripe_loader.py, http.py (rate-limited client), state.py
 extractor/     hubspot.py, stripe.py (incremental extraction), storage.py (raw tables + cursors), cli.py
-dbt/           staging, intermediate, snapshots, seeds (anomaly manifest), tests
+dbt/           staging, intermediate, marts, snapshots, seeds (anomaly manifest), tests, unit tests
 tests/         unit tests, no network needed
 docs/          account setup and architecture decisions (ADRs)
-.github/       CI: tests + generator smoke test on every pull request
+.github/       workflows: ci, daily-pipeline, cd (image), docs (GitHub Pages)
 ```
 
 ## Roadmap
@@ -106,6 +135,6 @@ docs/          account setup and architecture decisions (ADRs)
 - [x] Week 1: repo, synthetic data generator, loaders, tests
 - [x] Week 2: daily activity simulator, HubSpot and Stripe extractors, Docker
 - [x] Week 3: dbt staging and intermediate models, customer matching, deal snapshot
-- [ ] Week 4: dbt marts, tests and CI/CD
+- [x] Week 4: dbt marts, ground-truth tests, CI/CD, daily pipeline, published docs
 - [ ] Week 5: Snowflake and dashboard
 - [ ] Week 6: documentation and polish
