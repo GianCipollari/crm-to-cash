@@ -1,0 +1,5 @@
+# The pipeline exports the marts to CSV files in this folder before `npm run sources`
+# (python -m extractor.export_dashboard_data). Each file becomes a table: marts.<file name>.
+name: marts
+type: csv
+options: {}

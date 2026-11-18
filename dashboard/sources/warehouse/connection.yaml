@@ -1,5 +1,0 @@
-# The daily pipeline copies the DuckDB warehouse next to this file before `npm run sources`.
-name: warehouse
-type: duckdb
-options:
-  filename: warehouse.duckdb

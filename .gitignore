@@ -9,6 +9,9 @@ dbt/target/
 dbt/dbt_packages/
 dbt/logs/
 logs/
-_evidence/
-dashboard/sources/warehouse/*.duckdb
+dashboard/node_modules/
+dashboard/.evidence/
+dashboard/build/
+dashboard/sources/marts/*.csv
+dashboard/package-lock.json
 site/

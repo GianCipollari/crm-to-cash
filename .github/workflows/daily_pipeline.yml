@@ -78,14 +78,12 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Build the dashboard (official Evidence template + our pages and queries)
+      - name: Export the marts for the dashboard
+        run: python -m extractor.export_dashboard_data --db "$WAREHOUSE_PATH"
+
+      - name: Build the dashboard (Evidence, open-source packages)
+        working-directory: dashboard
         run: |
-          npx --yes degit evidence-dev/template _evidence
-          rm -rf _evidence/pages _evidence/sources
-          cp -r dashboard/pages dashboard/sources _evidence/
-          cp dashboard/evidence.config.yaml _evidence/evidence.config.yaml
-          cp "$WAREHOUSE_PATH" _evidence/sources/warehouse/warehouse.duckdb
-          cd _evidence
           npm install
           npm run sources
           npm run build

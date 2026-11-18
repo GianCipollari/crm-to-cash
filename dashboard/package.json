@@ -1,0 +1,19 @@
+{
+  "name": "crm-to-cash-dashboard",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sources": "evidence sources",
+    "build": "evidence build",
+    "dev": "evidence dev",
+    "preview": "evidence preview"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@evidence-dev/evidence": "latest",
+    "@evidence-dev/core-components": "latest",
+    "@evidence-dev/csv": "latest"
+  }
+}
