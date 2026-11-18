@@ -1,6 +1,6 @@
 # ADR 0005: Orchestration and CI/CD with GitHub Actions
 
-**Status:** accepted · **Date:** 2026-11-18
+**Status:** accepted, decision 4 partly superseded by ADR 0006 (site publishing) · **Date:** 2026-11-18
 
 ## Context
 
@@ -27,7 +27,7 @@ development machine), and the project must stay free.
    the ground-truth tests check the full chain from raw to marts on every change.
 
 4. **Delivery on every merge to `main`.** `cd.yml` publishes the Docker image to GitHub
-   Container Registry (`latest` and the commit SHA). `docs.yml` builds the dbt docs on the
+   Container Registry (`latest` and the commit SHA). `docs.yml` built the dbt docs on the
    fixtures and publishes them to GitHub Pages.
 
 5. **Secrets live only in GitHub Secrets** (`HUBSPOT_TOKEN`, `STRIPE_TEST_KEY`) and in a local
