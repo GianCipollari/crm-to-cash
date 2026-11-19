@@ -25,7 +25,7 @@ STATUS_LABELS = {
     "partial_payment": "Partially paid",
     "unpaid_overdue": "Unpaid, overdue",
     "not_yet_due": "Unpaid, not yet due",
-    "amount_mismatch": "Invoiced amount differs",
+    "amount_mismatch": "Amount differs",
     "late_stage_update": "Won after payment",
 }
 
@@ -35,7 +35,7 @@ ISSUE_LABELS = {
     "missing_invoice": "Never invoiced",
     "unpaid_invoice": "Unpaid, overdue",
     "partial_payment": "Partially paid",
-    "amount_mismatch": "Invoiced amount differs",
+    "amount_mismatch": "Amount differs",
     "late_stage_update": "Won after payment",
     "refund": "Refunded",
     "name_variant": "Company name differs",
