@@ -26,7 +26,7 @@ order by issues desc
 />
 
 **How to read:** how many records have each problem. Amount at risk, in the table, is the
-money involved; some problems (name variants, missing ids) have none but break matching.
+money involved; some problems (name differences, missing ids) have none but break matching.
 
 <DataTable data={by_type}>
     <Column id=issue_type title="Issue" />

@@ -27,7 +27,7 @@ order by gap_amount desc
 />
 
 **How to read:** each bar is money won in the CRM but not in the bank, grouped by cause.
-"Unpaid, not yet due" and "Invoice pending" are normal timing; the other bars are problems
+"Unpaid, not yet due" and "Invoice pending" (closed less than 10 days ago) are normal timing; the other bars are problems
 to fix. Statuses with no gap (reconciled deals, duplicates) are not shown.
 
 ```sql by_month

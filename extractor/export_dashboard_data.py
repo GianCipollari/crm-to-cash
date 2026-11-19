@@ -19,14 +19,29 @@ OUT_DIR = ROOT / "dashboard" / "sources" / "marts"
 STATUS_LABELS = {
     "reconciled": "Reconciled",
     "duplicate": "Duplicate deal",
-    "pending_invoice": "Invoice pending (under 10 days)",
+    "pending_invoice": "Invoice pending",
     "missing_invoice": "Never invoiced",
     "refunded": "Refunded",
     "partial_payment": "Partially paid",
     "unpaid_overdue": "Unpaid, overdue",
     "not_yet_due": "Unpaid, not yet due",
     "amount_mismatch": "Invoiced amount differs",
-    "late_stage_update": "Marked won after payment",
+    "late_stage_update": "Won after payment",
+}
+
+# Same wording as the statuses where the problem is the same; kept short so chart labels fit.
+ISSUE_LABELS = {
+    "duplicate_deal": "Duplicate deal",
+    "missing_invoice": "Never invoiced",
+    "unpaid_invoice": "Unpaid, overdue",
+    "partial_payment": "Partially paid",
+    "amount_mismatch": "Invoiced amount differs",
+    "late_stage_update": "Won after payment",
+    "refund": "Refunded",
+    "name_variant": "Company name differs",
+    "missing_external_id": "Customer without CRM id",
+    "unmatched_customer": "Unmatched customer",
+    "contact_without_external_id": "Contact without id",
 }
 
 
@@ -54,7 +69,7 @@ QUERIES = {
                won_amount, collected_amount, days_lead_to_cash
         from fct_lead_funnel""",
     "issues": f"""
-        select issue_type, {label_case('issue_type')} as issue_label, object_type,
+        select issue_type, {label_case('issue_type', ISSUE_LABELS)} as issue_label, object_type,
                external_id, related_deal_id, amount_at_risk, detail, detected_on
         from mart_data_quality_issues""",
 }
