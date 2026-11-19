@@ -7,22 +7,28 @@ reported and what was collected.
 
 ```sql by_status
 select
-    reconciliation_status,
+    status_label,
     count(*)         as deals,
     sum(gap_amount)  as gap_amount
 from marts.reconciliation
 group by 1
+having sum(gap_amount) > 0
 order by gap_amount desc
 ```
 
 <BarChart
     data={by_status}
-    x=reconciliation_status
+    x=status_label
     y=gap_amount
     swapXY=true
     yFmt=usd0
-    title="Gap by reconciliation status"
+    title="Where the gap comes from"
+    xAxisTitle=false
 />
+
+**How to read:** each bar is money won in the CRM but not in the bank, grouped by cause.
+"Unpaid, not yet due" and "Invoice pending" are normal timing; the other bars are problems
+to fix. Statuses with no gap (reconciled deals, duplicates) are not shown.
 
 ```sql by_month
 select
@@ -44,6 +50,9 @@ order by 1
     title="Won vs invoiced vs collected, by close month"
 />
 
+**How to read:** in a healthy month the three bars are the same height. Recent months are
+lower on the right because invoices are not due yet.
+
 ```sql by_rep
 select
     sales_rep,
@@ -61,8 +70,10 @@ order by won desc
 
 ## By sales rep
 
+Deals with issues excludes reconciled and not-yet-due deals.
+
 <DataTable data={by_rep}>
-    <Column id=sales_rep />
+    <Column id=sales_rep title="Sales rep" />
     <Column id=won_deals />
     <Column id=won fmt=usd0 />
     <Column id=collected fmt=usd0 />
@@ -79,7 +90,7 @@ select
     invoice_amount,
     net_collected,
     gap_amount,
-    reconciliation_status
+    status_label
 from marts.reconciliation
 where reconciliation_status not in ('reconciled', 'not_yet_due', 'pending_invoice')
 order by gap_amount desc
@@ -87,13 +98,15 @@ order by gap_amount desc
 
 ## Deals that need attention
 
+Every won deal with a problem, largest gap first. Search by deal, rep or status.
+
 <DataTable data={problem_deals} rows=15 search=true>
     <Column id=external_id title="Deal" />
-    <Column id=sales_rep />
+    <Column id=sales_rep title="Sales rep" />
     <Column id=close_date />
     <Column id=deal_amount fmt=usd0 />
     <Column id=invoice_amount fmt=usd0 />
     <Column id=net_collected fmt=usd0 />
     <Column id=gap_amount fmt=usd0 />
-    <Column id=reconciliation_status title="Status" />
+    <Column id=status_label title="Status" />
 </DataTable>
