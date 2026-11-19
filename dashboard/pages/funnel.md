@@ -7,7 +7,7 @@ Each contact is followed from lead to deal, won deal and payment.
 
 ```sql by_source
 select
-    lead_source,
+    lead_source_label                                             as lead_source,
     count(*)                                                      as contacts,
     avg(case when reached_deal then 1.0 else 0 end)               as deal_rate,
     avg(case when reached_won then 1.0 else 0 end)                as won_rate,
@@ -28,7 +28,11 @@ order by collected_per_contact desc
     y=collected_per_contact
     yFmt=usd0
     title="Cash collected per contact, by lead source"
+    xAxisTitle=false
 />
+
+**How to read:** this is the number to compare sources by. A source can win many deals and
+still rank low here if its customers pay late or not at all.
 
 <BarChart
     data={by_source}
@@ -37,10 +41,14 @@ order by collected_per_contact desc
     type=grouped
     yFmt=pct0
     title="Conversion at each stage, by lead source"
+    xAxisTitle=false
 />
 
+**How to read:** share of contacts that reached a deal, a won deal and a payment. The gap
+between the second and third bar is customers who signed but did not pay.
+
 <DataTable data={by_source}>
-    <Column id=lead_source />
+    <Column id=lead_source title="Lead source" />
     <Column id=contacts />
     <Column id=deal_rate fmt=pct1 />
     <Column id=won_rate fmt=pct1 />
