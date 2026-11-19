@@ -57,6 +57,14 @@ be tested against a known truth.
 | Snowflake cost to build and verify | 0.1079 credits (36 s per full build) |
 | Running cost | $0: GitHub Actions, GitHub Pages and free API tiers |
 
+### Where the gap comes from
+
+Roughly half of the money won but not yet collected is normal timing (invoices not yet due
+or about to be issued); the rest is overdue, never invoiced, refunded or partially paid.
+Figures change daily as the simulated company keeps selling.
+
+![Gap by cause](docs/img/dashboard_reconciliation.png)
+
 ## Engineering highlights
 
 - **Tested against ground truth.** The generator writes a manifest of every problem it plants;
