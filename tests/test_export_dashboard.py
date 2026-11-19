@@ -6,7 +6,12 @@ duckdb = pytest.importorskip("duckdb")
 
 
 def _label(code: str, labels=None) -> str:
-    return duckdb.sql(f"select {label_case('c', labels)} from (select '{code}' as c)").fetchone()[0]
+    conn = duckdb.connect()
+    try:
+        sql = f"select {label_case('c', labels)} from (select '{code}' as c)"
+        return conn.execute(sql).fetchone()[0]
+    finally:
+        conn.close()
 
 
 def test_mapped_status_gets_its_readable_name():
