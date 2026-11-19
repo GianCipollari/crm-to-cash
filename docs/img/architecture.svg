@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
+  <rect x="0" y="0" width="960" height="380" rx="12" fill="#ffffff"/>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0L10 5L0 10z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <text x="24" y="34" font-size="16" font-weight="600" fill="#111827">CRM-to-Cash: from two SaaS APIs to a reconciled, tested, published answer</text>
+
+  <!-- Orchestration band -->
+  <rect x="24" y="52" width="912" height="30" rx="8" fill="#eef2ff" stroke="#c7d2fe"/>
+  <text x="480" y="72" text-anchor="middle" fill="#3730a3">GitHub Actions: daily pipeline (06:17) · CI on every pull request · image and site published on merge</text>
+
+  <!-- Sources -->
+  <rect x="24" y="104" width="150" height="190" rx="10" fill="#f9fafb" stroke="#d1d5db"/>
+  <text x="99" y="124" text-anchor="middle" font-size="12" fill="#6b7280">Synthetic company</text>
+  <rect x="38" y="136" width="122" height="44" rx="8" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="99" y="163" text-anchor="middle" font-weight="600" fill="#111827">Generator</text>
+  <rect x="38" y="194" width="122" height="38" rx="8" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="99" y="218" text-anchor="middle" fill="#111827">HubSpot CRM</text>
+  <rect x="38" y="242" width="122" height="38" rx="8" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="99" y="266" text-anchor="middle" fill="#111827">Stripe (test)</text>
+
+  <!-- Extractor -->
+  <rect x="204" y="170" width="132" height="58" rx="10" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="270" y="194" text-anchor="middle" font-weight="600" fill="#111827">Extractor</text>
+  <text x="270" y="212" text-anchor="middle" font-size="11.5" fill="#6b7280">incremental, Docker</text>
+
+  <!-- Warehouse with dbt layers -->
+  <rect x="366" y="104" width="300" height="190" rx="10" fill="#f9fafb" stroke="#d1d5db"/>
+  <text x="516" y="124" text-anchor="middle" font-size="12" fill="#6b7280">DuckDB warehouse · dbt</text>
+  <rect x="380" y="140" width="60" height="120" rx="8" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="410" y="204" text-anchor="middle" font-size="12" fill="#111827">raw</text>
+  <rect x="452" y="140" width="62" height="120" rx="8" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="483" y="204" text-anchor="middle" font-size="12" fill="#111827">staging</text>
+  <rect x="526" y="140" width="62" height="120" rx="8" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="557" y="198" text-anchor="middle" font-size="12" fill="#111827">inter-</text>
+  <text x="557" y="213" text-anchor="middle" font-size="12" fill="#111827">mediate</text>
+  <rect x="600" y="140" width="54" height="120" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="627" y="204" text-anchor="middle" font-size="12" font-weight="600" fill="#1e3a8a">marts</text>
+  <text x="516" y="282" text-anchor="middle" font-size="11.5" fill="#6b7280">91 tests incl. ground truth</text>
+
+  <!-- Outputs -->
+  <rect x="706" y="120" width="230" height="52" rx="10" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="821" y="142" text-anchor="middle" font-weight="600" fill="#111827">Dashboard (Evidence)</text>
+  <text x="821" y="160" text-anchor="middle" font-size="11.5" fill="#6b7280">GitHub Pages, refreshed daily</text>
+  <rect x="706" y="184" width="230" height="52" rx="10" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="821" y="206" text-anchor="middle" font-weight="600" fill="#111827">dbt docs</text>
+  <text x="821" y="224" text-anchor="middle" font-size="11.5" fill="#6b7280">models, tests, lineage</text>
+  <rect x="706" y="248" width="230" height="52" rx="10" fill="#ffffff" stroke="#9ca3af"/>
+  <text x="821" y="270" text-anchor="middle" font-weight="600" fill="#111827">Docker image</text>
+  <text x="821" y="288" text-anchor="middle" font-size="11.5" fill="#6b7280">GitHub Container Registry</text>
+
+  <!-- Snowflake -->
+  <rect x="366" y="314" width="300" height="48" rx="10" fill="#ffffff" stroke="#9ca3af" stroke-dasharray="5 4"/>
+  <text x="516" y="335" text-anchor="middle" font-weight="600" fill="#111827">Snowflake: same dbt project</text>
+  <text x="516" y="352" text-anchor="middle" font-size="11.5" fill="#6b7280">adapter.dispatch · 23 of 23 figures match DuckDB</text>
+
+  <!-- Connectors -->
+  <g fill="none" stroke="#6b7280" stroke-width="1.4">
+    <path d="M99 180V194" marker-end="url(#a)"/>
+    <path d="M38 158H30V261H38" marker-end="url(#a)"/>
+    <path d="M160 213H182V199H204" marker-end="url(#a)"/>
+    <path d="M160 261H182V199H204"/>
+    <path d="M336 199H380" marker-end="url(#a)"/>
+    <path d="M440 200H452" marker-end="url(#a)"/>
+    <path d="M514 200H526" marker-end="url(#a)"/>
+    <path d="M588 200H600" marker-end="url(#a)"/>
+    <path d="M654 170H680V146H706" marker-end="url(#a)"/>
+    <path d="M654 210H706" marker-end="url(#a)"/>
+    <path d="M516 294V314" stroke-dasharray="5 4" marker-end="url(#a)"/>
+  </g>
+</svg>
